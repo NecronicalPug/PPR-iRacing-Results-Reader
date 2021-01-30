@@ -7,7 +7,10 @@ import csv #CSV file operations
 def read_results(number):
     start = timeit.timeit() #Starting Timer
     
-    file = open("results.csv","w");file.write("");file.close() #Opening file where results will be saved.
+    with open("results.csv","w") as file: #Opening file where results will be saved.
+        writer = csv.writer(file, delimiter = ";")
+        header = ["Position","Name","Car Number","Fastest Lap","Laps Completed"] #Header above all rows.
+        writer.writerow(header)
  
     with open("results.json") as file: #Opening file
         data = json.load(file)
