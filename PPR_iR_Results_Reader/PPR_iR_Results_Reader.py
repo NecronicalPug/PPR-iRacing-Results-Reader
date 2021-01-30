@@ -3,13 +3,14 @@ import sys
 import timeit #Execution time measuring
 import json #Json reader
 import csv #CSV file operations
+import time #Slowing code down.
+
 
 def read_results(number):
-    start = timeit.timeit() #Starting Timer
     
     with open("results.csv","w") as file: #Opening file where results will be saved.
         writer = csv.writer(file, delimiter = ";")
-        header = ["Position","Name","Car Number","Fastest Lap","Laps Completed"] #Header above all rows.
+        header = ["Position","Name","Car Number","Car","Fastest Lap","Laps Completed"] #Header above all rows.
         writer.writerow(header)
  
     with open("results.json") as file: #Opening file
@@ -23,8 +24,9 @@ def read_results(number):
             position = resultsdata[i]["finish_position"];position += 1
             lapscomplete = resultsdata[i]["laps_complete"]
             bestlap = resultsdata[i]["best_lap_time"];bestlap = str(bestlap);minutes = int(bestlap[0:3]) // 60;seconds = int(bestlap[0:3]) % 60;milliseconds = int(bestlap[4:]);bestlap = str(f'{minutes}:{seconds}.{milliseconds}') #Converting a weird best lap into a readable laptime.
+            carid = resultsdata[i]["car_id"];carname = carids(carid)
             carnumber = resultsdata[i]["livery"]["car_number"]
-            temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(bestlap);temparray.append(lapscomplete) #Appending to temporary array.
+            temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(bestlap);temparray.append(lapscomplete) #Appending to temporary array.
             print(temparray)
             
             
@@ -32,8 +34,27 @@ def read_results(number):
                 writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
                 writer.writerow(temparray) #Writing each driver's data on a new row every time.
 
-    end = timeit.timeit()
-    print(f'Process completed in {end - start} seconds.')
+    print("Process Complete")
+    time.sleep(2)
+    sys.exit()
+
+def carids(carid): #Function to find the car make assigned to car ids in iracing.
+    if carid == 43:
+        return("Mclaren MP4-12C")
+    elif carid == 59:
+        return("Ford GT3")
+    elif carid == 72:
+        return("Mercedes AMG")
+    elif carid == 73:
+        return("Audi R8 LMS")
+    elif carid == 94:
+        return("Ferrari 488")
+    elif carid == 132:
+        return("BMW M4 Prototype")
+    elif carid == 133:
+        return("Lamborghini Huracan Evo")
+    else:
+        return("Error")
 
 number = e.integerbox("Enter the number of drivers in the session.", "PPR iRacing Results Reader")
 read_results(number)
