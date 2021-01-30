@@ -3,6 +3,7 @@ import sys
 import timeit #Execution time measuring
 import json #Json reader
 import csv #CSV file operations
+import time #Slowing code down.
 
 def read_results(number):
     start = timeit.timeit() #Starting Timer
@@ -33,7 +34,9 @@ def read_results(number):
                 writer.writerow(temparray) #Writing each driver's data on a new row every time.
 
     end = timeit.timeit()
-    print(f'Process completed in {end - start} seconds.')
+    print(f'Process completed in {end - start} seconds.') #Execution time displayed.
+    time.sleep(2)
+    sys.exit()
 
 number = e.integerbox("Enter the number of drivers in the session.", "PPR iRacing Results Reader")
 read_results(number)
