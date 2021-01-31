@@ -5,7 +5,6 @@ import json #Json reader
 import csv #CSV file operations
 import time #Slowing code down.
 
-sessionstate = 0 #0 = Race, 1 = Quali, 2 = Practice
 
 def read_results(number):
     
