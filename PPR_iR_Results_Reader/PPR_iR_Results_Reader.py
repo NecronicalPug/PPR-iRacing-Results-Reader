@@ -5,34 +5,52 @@ import json #Json reader
 import csv #CSV file operations
 import time #Slowing code down.
 
+sessionstate = 0 #0 = Race, 1 = Quali, 2 = Practice
 
 def read_results(number):
     
-    with open("results.csv","w") as file: #Opening file where results will be saved.
-        writer = csv.writer(file, delimiter = ";")
-        header = ["Position","Name","Car Number","Car","Fastest Lap","Laps Completed"] #Header above all rows.
-        writer.writerow(header)
+    file = open("results.csv","w") #Opening file where results will be saved.
+    file.write("")
+    file.close()
  
     with open("results.json") as file: #Opening file
         data = json.load(file)
         sessionresultsdata = data["session_results"] #Reading just the session_results out of everything
-        resultsdata = sessionresultsdata[0]["results"] #Reading actual sessions results out of session_results
+        numberofsessions = []
+        for i in sessionresultsdata:
+            numberofsessions.append(i["simsession_name"])
+        totaliterations = len(numberofsessions)
+        for y in range(totaliterations):
+            resultsdata = sessionresultsdata[y]["results"] #Reading actual sessions results out of session_results
+            workaround = [] #Having to use a workaround to write a single word to the 
+            workaround.append(numberofsessions[y])
+            header = ["Position","Name","Car Number","Car","Fastest Lap","Laps Completed"] #Header above all rows.
 
-        for i in range(number): #Looping for each driver to read their data.
-            temparray = []
-            name = resultsdata[i]["display_name"]
-            position = resultsdata[i]["finish_position"];position += 1
-            lapscomplete = resultsdata[i]["laps_complete"]
-            bestlap = resultsdata[i]["best_lap_time"];bestlap = str(bestlap);minutes = int(bestlap[0:3]) // 60;seconds = int(bestlap[0:3]) % 60;milliseconds = int(bestlap[4:]);bestlap = str(f'{minutes}:{seconds}.{milliseconds}') #Converting a weird best lap into a readable laptime.
-            carid = resultsdata[i]["car_id"];carname = carids(carid)
-            carnumber = resultsdata[i]["livery"]["car_number"]
-            temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(bestlap);temparray.append(lapscomplete) #Appending to temporary array.
-            print(temparray)
-            
-            
-            with open("results.csv","a", newline = "") as file2: #Opening CSV file
+            with open("results.csv","a", newline = "") as file2: #Opening CSV file to write session state and header row.
                 writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
-                writer.writerow(temparray) #Writing each driver's data on a new row every time.
+                writer.writerow(workaround)
+                writer.writerow(header)
+
+            for i in range(number): #Looping for each driver to read their data.
+                temparray = []
+                name = resultsdata[i]["display_name"]
+                position = resultsdata[i]["finish_position"];position += 1
+                lapscomplete = resultsdata[i]["laps_complete"]
+                try:
+                    bestlap = resultsdata[i]["best_lap_time"];bestlap = str(bestlap);minutes = int(bestlap[0:3]) // 60;seconds = int(bestlap[0:3]) % 60;milliseconds = int(bestlap[4:]);bestlap = str(f'{minutes}:{seconds}.{milliseconds}') #Converting a weird best lap into a readable laptime.
+                except ValueError:
+                    bestlap = "None"
+                carid = resultsdata[i]["car_id"];carname = carids(carid)
+                carnumber = resultsdata[i]["livery"]["car_number"]
+                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(bestlap);temparray.append(lapscomplete) #Appending to temporary array.
+                print(temparray)
+            
+            
+                with open("results.csv","a", newline = "") as file2: #Opening CSV file
+                    writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
+                    writer.writerow(temparray) #Writing each driver's data on a new row every time.
+
+                    
 
     print("Process Complete")
     time.sleep(2)
