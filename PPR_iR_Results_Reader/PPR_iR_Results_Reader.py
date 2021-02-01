@@ -23,7 +23,7 @@ def read_results(number):
             resultsdata = sessionresultsdata[y]["results"] #Reading actual sessions results out of session_results
             workaround = [] #Having to use a workaround to write a single word to the 
             workaround.append(numberofsessions[y])
-            header = ["Position","Name","Car Number","Car","Fastest Lap","Laps Completed"] #Header above all rows.
+            header = ["Position","Name","Car Number","Car","Interval","Fastest Lap","Laps Completed"] #Header above all rows.
 
             with open("results.csv","a", newline = "") as file2: #Opening CSV file to write session state and header row.
                 writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
@@ -35,17 +35,27 @@ def read_results(number):
                 name = resultsdata[i]["display_name"]
                 position = resultsdata[i]["finish_position"];position += 1
                 lapscomplete = resultsdata[i]["laps_complete"]
+                try: #Same thing as bestlap
+                    averagelap = resultsdata[i]["average_lap"];averagelap = str(averagelap);minutes = int(averagelap[0:3]) // 60;milliseconds = averagelap[3:6] #Converting a weird average lap into a readable laptime.
+                    seconds = int(averagelap[0:3]) % 60
+                    if seconds < 10: #Preventing a missing 0 from occurring. 
+                        seconds = str(f'0{seconds}') 
+                    averagelap = str(f'{minutes}:{seconds}.{milliseconds}')
+                except ValueError:
+                    averagelap = "None" 
                 try:
                     bestlap = resultsdata[i]["best_lap_time"];bestlap = str(bestlap);minutes = int(bestlap[0:3]) // 60;milliseconds = bestlap[3:6] #Converting a weird best lap into a readable laptime.
                     seconds = int(bestlap[0:3]) % 60
-                    if seconds < 10: #Preventing a missing 0 from occurring. 
+                    if seconds < 10: 
                         seconds = str(f'0{seconds}') 
                     bestlap = str(f'{minutes}:{seconds}.{milliseconds}')
                 except ValueError: #No errors in these ends.
                     bestlap = "None"
                 carid = resultsdata[i]["car_id"];carname = carids(carid)
                 carnumber = resultsdata[i]["livery"]["car_number"]
-                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(bestlap);temparray.append(lapscomplete) #Appending to temporary array.
+                interval = resultsdata[i]["interval"];print(interval);intervalresult = find_interval(interval)
+                print(interval)
+                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(lapscomplete) #Appending to temporary array.
                 print(temparray)
             
             
@@ -76,6 +86,39 @@ def carids(carid): #Function to find the car make assigned to car ids in iracing
         return("Lamborghini Huracan Evo")
     else:
         return("Error")
+
+
+def find_interval(number): #Used to determine what the interval will be like, sucks that it's so complicated.
+    number = str(number)
+    if len(number) == 4:
+        seconds = 0;milliseconds = number[0:3];result = (f'{seconds}.{milliseconds}')
+        return result
+    elif len(number) == 5:
+        seconds = number[0];milliseconds = number[1:4];result = (f'{seconds}.{milliseconds}')
+        return result
+    elif len(number) == 6: #This is far more complicated than I'd like, but that's what happens when you cross over pure seconds.milliseconds and minutes.seconds.milliseconds.
+        seconds = int(number[0:2]);milliseconds = number[2:5]
+        if seconds < 60:
+            result = (f'{seconds}.{milliseconds}')
+            return result
+        else: #Adding minutes.
+            minutes = int(number[0:2]) // 60;seconds = int(number[0:2]) % 60
+            if seconds < 10:
+                seconds = str(f'0{seconds}')
+            result = str(f'{minutes}:{seconds}.{milliseconds}')
+            return result
+    elif len(number) == 7:
+        minutes = int(number[0:3]) // 60;seconds = int(number[0:3]) % 60;milliseconds = number[3:6]
+        if seconds < 10: 
+            seconds = str(f'0{seconds}') 
+        result = str(f'{minutes}:{seconds}.{milliseconds}')
+    elif int(number) <= 0:
+        if int(number) == 0:
+            return "Leader"
+        elif int(number) < 0:
+            return (f'{number} laps')
+    else:
+        return "Error"
 
 number = e.integerbox("Enter the number of drivers in the session.", "PPR iRacing Results Reader")
 read_results(number)
