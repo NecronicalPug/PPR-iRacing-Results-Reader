@@ -36,8 +36,12 @@ def read_results(number):
                 position = resultsdata[i]["finish_position"];position += 1
                 lapscomplete = resultsdata[i]["laps_complete"]
                 try:
-                    bestlap = resultsdata[i]["best_lap_time"];bestlap = str(bestlap);minutes = int(bestlap[0:3]) // 60;seconds = int(bestlap[0:3]) % 60;milliseconds = bestlap[3:6];bestlap = str(f'{minutes}:{seconds}.{milliseconds}') #Converting a weird best lap into a readable laptime.
-                except ValueError:
+                    bestlap = resultsdata[i]["best_lap_time"];bestlap = str(bestlap);minutes = int(bestlap[0:3]) // 60;milliseconds = bestlap[3:6] #Converting a weird best lap into a readable laptime.
+                    seconds = int(bestlap[0:3]) % 60
+                    if seconds < 10: #Preventing a missing 0 from occurring. 
+                        seconds = str(f'0{seconds}') 
+                    bestlap = str(f'{minutes}:{seconds}.{milliseconds}')
+                except ValueError: #No errors in these ends.
                     bestlap = "None"
                 carid = resultsdata[i]["car_id"];carname = carids(carid)
                 carnumber = resultsdata[i]["livery"]["car_number"]
