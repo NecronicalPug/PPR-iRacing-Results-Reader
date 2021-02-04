@@ -73,13 +73,49 @@ def read_results(number,racesessionnumber):
                 else:
                     points = ""
          
-                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(lapscomplete);temparray.append(points);              
+                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(lapscomplete);temparray.append(points);
                 if classname == "Pro":
                     temparray.insert(1,propositioninclassiterator)
                     proresults.append(temparray)
                 else:
                     temparray.insert(1,ampositioninclassiterator)
                     amresults.append(temparray)
+
+            if sessionresultsdata[y]["simsession_name"] == "RACE": #Fastest Lap
+                min = proresults[0][6]
+                location = proresults[0]
+                for i in proresults:
+                    if i[6] < min:
+                        if i[6] == "-1:59.":
+                            continue
+                        min = i[6]
+                        location = i                      
+                    else:
+                        continue
+                location.append("FL")
+                location[8] = location[8] + 2
+
+
+                min = amresults[0][6]
+                location = amresults[0]
+                for i in amresults:
+                    if i[6] < min:
+                        if i[6] == "-1:59.":
+                            continue
+                        min = i[6]
+                        location = i                      
+                    else:
+                        continue
+                location.append("FL")
+                location[8] = location[8] + 2
+
+
+            if sessionresultsdata[y]["simsession_name"] == "QUALIFY": #Points for pole position aren't available.
+                location3 = proresults[0]
+                location3.append("Pole")
+                location4 = amresults[0]
+                location4.append("Pole")
+
 
             with open("results.csv","a", newline = "") as file2: #Opening CSV file
                 writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
