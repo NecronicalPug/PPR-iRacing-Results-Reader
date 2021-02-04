@@ -22,7 +22,7 @@ def read_results(number,racesessionnumber):
             resultsdata = sessionresultsdata[y]["results"] #Reading actual sessions results out of session_results
             workaround = [] #Having to use a workaround to write a single word to the 
             workaround.append(numberofsessions[y])
-            header = ["Position in class","Position","Name","Car Number","Car","Interval","Fastest Lap","Laps Completed","Points"] #Header above all rows.
+            header = ["Position","Position in class","Name","Car Number","Car","Interval","Fastest Lap","Laps Completed","Points"] #Header above all rows.
 
             with open("results.csv","a", newline = "") as file2: #Opening CSV file to write session state and header row.
                 writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
