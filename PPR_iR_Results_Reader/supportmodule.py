@@ -22,7 +22,7 @@ def read_results(number,racesessionnumber):
             resultsdata = sessionresultsdata[y]["results"] #Reading actual sessions results out of session_results
             workaround = [] #Having to use a workaround to write a single word to the 
             workaround.append(numberofsessions[y])
-            header = ["Position","Name","Car Number","Car","Interval","Fastest Lap","Laps Completed","Points"] #Header above all rows.
+            header = ["Position in class","Position","Name","Car Number","Car","Interval","Fastest Lap","Laps Completed","Points"] #Header above all rows.
 
             with open("results.csv","a", newline = "") as file2: #Opening CSV file to write session state and header row.
                 writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
@@ -30,7 +30,11 @@ def read_results(number,racesessionnumber):
                 writer.writerow(header)
             
             propositioninclassiterator = 0  #Way to get the positions working.
-            ampositioninclassiterator = 0 
+            ampositioninclassiterator = 0
+            proheader = ["PRO"]
+            amheader = ["AM"]
+            proresults = []
+            amresults = []
             for i in range(number): #Looping for each driver to read their data.
                 temparray = []
                 name = resultsdata[i]["display_name"]
@@ -68,15 +72,23 @@ def read_results(number,racesessionnumber):
                         points = get_points(propositioninclassiterator,racesessionnumber)
                 else:
                     points = ""
-                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(lapscomplete);temparray.append(points);temparray.append(classname); #Appending to temporary array.       
-                print(temparray)
-                
-            
-                with open("results.csv","a", newline = "") as file2: #Opening CSV file
-                    writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
-                    writer.writerow(temparray) #Writing each driver's data on a new row every time.
+         
+                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(lapscomplete);temparray.append(points);              
+                if classname == "Pro":
+                    temparray.insert(1,propositioninclassiterator)
+                    proresults.append(temparray)
+                else:
+                    temparray.insert(1,ampositioninclassiterator)
+                    amresults.append(temparray)
 
-                    
+            with open("results.csv","a", newline = "") as file2: #Opening CSV file
+                writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
+                writer.writerow(proheader)
+                writer.writerows(proresults)
+                writer.writerow(amheader)
+                writer.writerows(amresults)
+
+            
 
     print("Process Complete")
     time.sleep(2)
