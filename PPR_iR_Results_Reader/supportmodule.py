@@ -64,7 +64,7 @@ def read_results(number,racesessionnumber):
                 else:
                     classname = "Pro"
                     propositioninclassiterator += 1
-                interval = resultsdata[i]["interval"];print(interval);intervalresult = find_interval(interval)
+                interval = resultsdata[i]["interval"];intervalresult = find_interval(interval)
                 if sessionresultsdata[y]["simsession_name"] == "RACE":
                     if classname == "Am":
                         points = get_points(ampositioninclassiterator,racesessionnumber)
