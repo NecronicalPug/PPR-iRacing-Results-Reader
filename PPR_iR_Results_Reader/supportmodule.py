@@ -1,4 +1,3 @@
-import easygui as e #GUI element
 import sys
 import timeit #Execution time measuring
 import json #Json reader
@@ -6,7 +5,7 @@ import csv #CSV file operations
 import time #Slowing code down.
 
 
-def read_results(number):
+def read_results(number,racesessionnumber):
     
     file = open("results.csv","w") #Opening file where results will be saved.
     file.write("")
@@ -23,13 +22,15 @@ def read_results(number):
             resultsdata = sessionresultsdata[y]["results"] #Reading actual sessions results out of session_results
             workaround = [] #Having to use a workaround to write a single word to the 
             workaround.append(numberofsessions[y])
-            header = ["Position","Name","Car Number","Car","Interval","Fastest Lap","Laps Completed"] #Header above all rows.
+            header = ["Position","Name","Car Number","Car","Interval","Fastest Lap","Laps Completed","Points"] #Header above all rows.
 
             with open("results.csv","a", newline = "") as file2: #Opening CSV file to write session state and header row.
                 writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
                 writer.writerow(workaround)
                 writer.writerow(header)
-
+            
+            propositioninclassiterator = 0  #Way to get the positions working.
+            ampositioninclassiterator = 0 
             for i in range(number): #Looping for each driver to read their data.
                 temparray = []
                 name = resultsdata[i]["display_name"]
@@ -53,11 +54,23 @@ def read_results(number):
                     bestlap = "None"
                 carid = resultsdata[i]["car_id"];carname = carids(carid)
                 carnumber = resultsdata[i]["livery"]["car_number"]
+                if int(carnumber) // 100 == 1:
+                    classname = "Am"
+                    ampositioninclassiterator += 1
+                else:
+                    classname = "Pro"
+                    propositioninclassiterator += 1
                 interval = resultsdata[i]["interval"];print(interval);intervalresult = find_interval(interval)
-                print(interval)
-                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(lapscomplete) #Appending to temporary array.
+                if sessionresultsdata[y]["simsession_name"] == "RACE":
+                    if classname == "Am":
+                        points = get_points(ampositioninclassiterator,racesessionnumber)
+                    else:
+                        points = get_points(propositioninclassiterator,racesessionnumber)
+                else:
+                    points = ""
+                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(lapscomplete);temparray.append(points);temparray.append(classname); #Appending to temporary array.       
                 print(temparray)
-            
+                
             
                 with open("results.csv","a", newline = "") as file2: #Opening CSV file
                     writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
@@ -120,5 +133,69 @@ def find_interval(number): #Used to determine what the interval will be like, su
     else:
         return "Error"
 
-number = e.integerbox("Enter the number of drivers in the session.", "PPR iRacing Results Reader")
-read_results(number)
+
+def get_points(position,racesessionnumber): #Calculating championship points based on position.
+    if racesessionnumber == 1:
+        divider = 1
+    elif racesessionnumber == 2:
+        divider = 2
+    else:
+        print("Error.")
+
+    if position ==  1:
+        points = 30 / divider
+        return points
+    elif position ==  2:
+        points = 25 / divider
+        return points
+    elif position ==  3:
+        points = 21 / divider
+        return points    
+    elif position ==  4:
+        points = 18 / divider
+        return points
+    elif position ==  5:
+        points = 16 / divider
+        return points
+    elif position ==  6:
+        points = 14 / divider
+        return points
+    elif position ==  7:
+        points = 12 / divider
+        return points
+    elif position ==  8:
+        points = 11 / divider
+        return points
+    elif position ==  9:
+        points = 10 / divider
+        return points    
+    elif position ==  10:
+        points = 9 / divider
+        return points
+    elif position ==  11:
+        points = 8 / divider
+        return points
+    elif position ==  12:
+        points = 7 / divider
+        return points
+    elif position ==  13:
+        points = 6 / divider
+        return points
+    elif position ==  14:
+        points = 5 / divider
+        return points
+    elif position ==  15:
+        points = 4 / divider
+        return points    
+    elif position ==  16:
+        points = 3 / divider
+        return points
+    elif position ==  17:
+        points = 2 / divider
+        return points
+    elif position ==  18:
+        points = 1 / divider
+        return points
+    elif position >= 19:
+        points = 0
+        return points

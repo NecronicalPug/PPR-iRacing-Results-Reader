@@ -3,14 +3,17 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>89d4f9ad-2a2d-428c-9a26-3324714ca392</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
-    <StartupFile>PPR_iR_Results_Reader.py</StartupFile>
+    <ProjectHome>
+    </ProjectHome>
+    <StartupFile>iR_Results_Reader.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>PPR_iR_Results_Reader</Name>
+    <Name>iR_Results_Reader</Name>
     <RootNamespace>PPR_iR_Results_Reader</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
+    <InterpreterId>Global|PythonCore|3.8-32</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +24,11 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="PPR_iR_Results_Reader.py" />
+    <Compile Include="iR_Results_Reader.py" />
+    <Compile Include="supportmodule.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.8-32" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
