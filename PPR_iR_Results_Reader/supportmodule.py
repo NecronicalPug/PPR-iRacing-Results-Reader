@@ -40,22 +40,9 @@ def read_results(number,racesessionnumber):
                 name = resultsdata[i]["display_name"]
                 position = resultsdata[i]["finish_position"];position += 1
                 lapscomplete = resultsdata[i]["laps_complete"]
-                try: #Same thing as bestlap
-                    averagelap = resultsdata[i]["average_lap"];averagelap = str(averagelap);minutes = int(averagelap[0:3]) // 60;milliseconds = averagelap[3:6] #Converting a weird average lap into a readable laptime.
-                    seconds = int(averagelap[0:3]) % 60
-                    if seconds < 10: #Preventing a missing 0 from occurring. 
-                        seconds = str(f'0{seconds}') 
-                    averagelap = str(f'{minutes}:{seconds}.{milliseconds}')
-                except ValueError:
-                    averagelap = "None" 
-                try:
-                    bestlap = resultsdata[i]["best_lap_time"];bestlap = str(bestlap);minutes = int(bestlap[0:3]) // 60;milliseconds = bestlap[3:6] #Converting a weird best lap into a readable laptime.
-                    seconds = int(bestlap[0:3]) % 60
-                    if seconds < 10: 
-                        seconds = str(f'0{seconds}') 
-                    bestlap = str(f'{minutes}:{seconds}.{milliseconds}')
-                except ValueError: #No errors in these ends.
-                    bestlap = "None"
+                averagelap = resultsdata[i]["average_lap"];averagelap = find_lap(averagelap)
+                print(averagelap)
+                bestlap = resultsdata[i]["best_lap_time"];bestlap = find_lap(bestlap) 
                 carid = resultsdata[i]["car_id"];carname = carids(carid)
                 carnumber = resultsdata[i]["livery"]["car_number"]
                 if int(carnumber) // 100 == 1:
@@ -179,6 +166,26 @@ def find_interval(number): #Used to determine what the interval will be like, su
         elif int(number) < 0:
             return (f'{number} laps')
     else:
+        return "Error"
+
+def find_lap(number):
+    number = str(number)
+    try:
+        if len(number) == 6:
+            minutes = int(number[0:2]) // 60;seconds = int(number[0:2]) % 60;milliseconds = int(number[2:5]);result = (f'{seconds}.{milliseconds}')
+            if seconds < 10:
+                seconds = str(f'0{seconds}')
+            result = str(f'{minutes}:{seconds}.{milliseconds}')
+            return result
+        elif len(number) == 7:
+            minutes = int(number[0:3]) // 60;seconds = int(number[0:3]) % 60;milliseconds = number[3:6]
+            if seconds < 10:
+                seconds = str(f'0{seconds}')
+            result = str(f'{minutes}:{seconds}.{milliseconds}')
+            return result
+        else:
+            return "Error"
+    except Exception:
         return "Error"
 
 
