@@ -20,10 +20,11 @@ def read_results(number):
             numberofsessions.append(i["simsession_name"])
         totaliterations = len(numberofsessions)
         for y in range(totaliterations):
+            everything = []
             resultsdata = sessionresultsdata[y]["results"] #Reading actual sessions results out of session_results
-            workaround = [] #Having to use a workaround to write a single word to the 
+            workaround = [] #Having to use a workaround to write a single word to the array.
             workaround.append(numberofsessions[y])
-            header = ["Position","Name","Car Number","Car","Interval","Fastest Lap","Laps Completed"] #Header above all rows.
+            header = ["Position","Name","Car Number","Car","Interval","Fastest Lap","Average Laps","Laps Completed"] #Header above all rows.
 
             with open("results.csv","a", newline = "") as file2: #Opening CSV file to write session state and header row.
                 writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
@@ -35,33 +36,25 @@ def read_results(number):
                 name = resultsdata[i]["display_name"]
                 position = resultsdata[i]["finish_position"];position += 1
                 lapscomplete = resultsdata[i]["laps_complete"]
-                try: #Same thing as bestlap
-                    averagelap = resultsdata[i]["average_lap"];averagelap = str(averagelap);minutes = int(averagelap[0:3]) // 60;milliseconds = averagelap[3:6] #Converting a weird average lap into a readable laptime.
-                    seconds = int(averagelap[0:3]) % 60
-                    if seconds < 10: #Preventing a missing 0 from occurring. 
-                        seconds = str(f'0{seconds}') 
-                    averagelap = str(f'{minutes}:{seconds}.{milliseconds}')
-                except ValueError:
-                    averagelap = "None" 
-                try:
-                    bestlap = resultsdata[i]["best_lap_time"];bestlap = str(bestlap);minutes = int(bestlap[0:3]) // 60;milliseconds = bestlap[3:6] #Converting a weird best lap into a readable laptime.
-                    seconds = int(bestlap[0:3]) % 60
-                    if seconds < 10: 
-                        seconds = str(f'0{seconds}') 
-                    bestlap = str(f'{minutes}:{seconds}.{milliseconds}')
-                except ValueError: #No errors in these ends.
-                    bestlap = "None"
+                averagelap = resultsdata[i]["average_lap"];averagelap = find_lap(averagelap)
+                bestlap = resultsdata[i]["best_lap_time"];templaptime.append(bestlap);bestlap = find_lap(bestlap);
                 carid = resultsdata[i]["car_id"];carname = carids(carid)
                 carnumber = resultsdata[i]["livery"]["car_number"]
-                interval = resultsdata[i]["interval"];print(interval);intervalresult = find_interval(interval)
-                print(interval)
-                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(lapscomplete) #Appending to temporary array.
-                print(temparray)
+                interval = resultsdata[i]["interval"];intervalresult = find_interval(interval)
+                temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(averagelap);temparray.append(lapscomplete) #Appending to temporary array.
+                everything.append(temparray)
             
-            
-                with open("results.csv","a", newline = "") as file2: #Opening CSV file
-                    writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
-                    writer.writerow(temparray) #Writing each driver's data on a new row every time.
+
+
+            if sessionresultsdata[y]["simsession_name"] == "RACE": #Fastest Lap
+                
+                location = templaptime.index(min(templaptime))
+                everything[location].append("FL")
+
+            with open("results.csv","a", newline = "") as file2: #Opening CSV file
+                writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
+                writer.writerows(everything) #Writing each driver's data on a new row every time.
+                 
 
                     
 
@@ -119,6 +112,27 @@ def find_interval(number): #Used to determine what the interval will be like, su
             return (f'{number} laps')
     else:
         return "Error"
+
+def find_lap(number):
+    number = str(number)
+    try:
+        if len(number) == 6:
+            minutes = int(number[0:2]) // 60;seconds = int(number[0:2]) % 60;milliseconds = int(number[2:5]);result = (f'{seconds}.{milliseconds}')
+            if seconds < 10:
+                seconds = str(f'0{seconds}')
+            result = str(f'{minutes}:{seconds}.{milliseconds}')
+            return result
+        elif len(number) == 7:
+            minutes = int(number[0:3]) // 60;seconds = int(number[0:3]) % 60;milliseconds = number[3:6]
+            if seconds < 10:
+                seconds = str(f'0{seconds}')
+            result = str(f'{minutes}:{seconds}.{milliseconds}')
+            return result
+        else:
+            return "Error"
+    except Exception:
+        return "Error"
+
 
 number = e.integerbox("Enter the number of drivers in the session.", "PPR iRacing Results Reader")
 read_results(number)
