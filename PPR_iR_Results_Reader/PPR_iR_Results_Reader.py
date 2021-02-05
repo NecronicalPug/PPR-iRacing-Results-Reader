@@ -37,19 +37,16 @@ def read_results(number):
                 position = resultsdata[i]["finish_position"];position += 1
                 lapscomplete = resultsdata[i]["laps_complete"]
                 averagelap = resultsdata[i]["average_lap"];averagelap = find_lap(averagelap)
-                bestlap = resultsdata[i]["best_lap_time"];templaptime.append(bestlap);bestlap = find_lap(bestlap);
+                bestlap = resultsdata[i]["best_lap_time"];bestlap = find_lap(bestlap)
                 carid = resultsdata[i]["car_id"];carname = carids(carid)
                 carnumber = resultsdata[i]["livery"]["car_number"]
                 interval = resultsdata[i]["interval"];intervalresult = find_interval(interval)
                 temparray.append(position);temparray.append(name);temparray.append(carnumber);temparray.append(carname);temparray.append(intervalresult);temparray.append(bestlap);temparray.append(averagelap);temparray.append(lapscomplete) #Appending to temporary array.
                 everything.append(temparray)
-            
+
+                    
 
 
-            if sessionresultsdata[y]["simsession_name"] == "RACE": #Fastest Lap
-                
-                location = templaptime.index(min(templaptime))
-                everything[location].append("FL")
 
             with open("results.csv","a", newline = "") as file2: #Opening CSV file
                 writer = csv.writer(file2, delimiter = ";") #CSV writer module. 
